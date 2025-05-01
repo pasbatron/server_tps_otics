@@ -1,0 +1,61 @@
+Untuk memperbaiki error "Cache unable to write" di CodeIgniter 4, ikuti langkah-langkah berikut:
+
+    Periksa Izin Folder Cache:
+
+bash
+
+sudo chmod -R 775 /opt/lampp/htdocs/Project_Codeigniter4/writable/cache/
+sudo chown -R www-data:www-data /opt/lampp/htdocs/Project_Codeigniter4/writable/
+
+    Verifikasi Kepemilikan Folder (pastikan user webserver memiliki akses):
+
+bash
+
+ls -l /opt/lampp/htdocs/Project_Codeigniter4/writable/
+
+    Periksa Konfigurasi SELinux/AppArmor (jika digunakan):
+
+bash
+
+sudo setenforce 0  # Nonaktifkan sementara untuk testing
+
+    Pastikan Folder Cache Ada:
+
+bash
+
+mkdir -p /opt/lampp/htdocs/Project_Codeigniter4/writable/cache/
+
+    Periksa Konfigurasi Cache di app/Config/Cache.php:
+
+php
+
+public $file = [
+    'storePath' => WRITEPATH . 'cache', // Pastikan path benar
+    'mode'   => 0640, // atau 0660 untuk izin lebih longgar
+];
+
+    Clear Cache Manual:
+
+bash
+
+rm -rf /opt/lampp/htdocs/Project_Codeigniter4/writable/cache/*
+
+Setelah melakukan perubahan, restart webserver Anda:
+bash
+
+sudo service apache2 restart
+# atau
+sudo systemctl restart nginx
+
+Jika masalah tetap ada, coba:
+
+    Tambahkan user ke grup webserver
+
+    Periksa filesystem mount options (noatime,nodev,nosuid)
+
+    Pastikan tidak ada permission conflict dengan XAMPP
+
+Untuk environment development, Anda bisa sementara menggunakan:
+bash
+
+sudo chmod -R 777 /opt/lampp/htdocs/Project_Codeigniter4/writable/
